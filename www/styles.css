@@ -1,13 +1,13 @@
 .links line {
-  stroke: #999;
+  stroke: #282828;
   stroke-opacity: 0.3;
 }
 
 .nodes circle {
   stroke: #211e1e;
-  stroke-width: .5px;
+  stroke-width: .1px;
 }
 
 body{
-  background-color: #211e1e;
+  background-color: #f4f3ec;
 }
