@@ -88,16 +88,16 @@ Shiny.addCustomMessageHandler("init",
 
     console.log(data);
 
-    svg.selectAll(".links")
+    svg.selectAll(".lines")
       .transition()
-      .duration(750)
+      .duration(400)
         .style("stroke-width", 0)
         .remove();
 
-    svg.selectAll(".nodes")
+    svg.selectAll(".circles")
       .transition()
       .duration(750)
-        .attr("r", 0)
+        .attr('r', 0)
         .remove();
 
     var edgeCounts = [];
@@ -115,6 +115,7 @@ Shiny.addCustomMessageHandler("init",
       .selectAll("line")
       .data(data.links)
       .enter().append("line")
+        .attr('class', 'lines')
         .attr("stroke-width", function(d) { return edgeSize(d.value); });
 
 
@@ -133,6 +134,7 @@ Shiny.addCustomMessageHandler("init",
       .selectAll("circle")
       .data(data.nodes)
       .enter().append("circle")
+        .attr('class','circles')
         .attr("r", 0)
         .attr("r", function(d) {return nodeSize(d.value); })
         .attr("fill", function(d) { return colorPicker(d.ing_type, d.aa_group, d.srm); })
@@ -144,6 +146,9 @@ Shiny.addCustomMessageHandler("init",
 
     node.append("title")
       .text(function(d) { return d.id; });
+
+    simulation.restart();
+    simulation.alpha(.5).alphaTarget(0);
 
     simulation
       .nodes(data.nodes)
@@ -160,8 +165,10 @@ Shiny.addCustomMessageHandler("init",
           .attr("y2", function(d) { return d.target.y; });
 
       node
-          .attr("cx", function(d) { return d.x; })
-          .attr("cy", function(d) { return d.y; });
+          // .attr("cx", function(d) { return d.x; })
+          // .attr("cy", function(d) { return d.y; });
+          .attr("cx", function(d) { return d.x = Math.max(nodeSize(d.value), Math.min(width - nodeSize(d.value), d.x)); })
+        .attr("cy", function(d) { return d.y = Math.max(nodeSize(d.value), Math.min(height - nodeSize(d.value), d.y)); });
     }
 
   });
