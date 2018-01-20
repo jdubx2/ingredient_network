@@ -53,4 +53,16 @@ ingredient_nodes %>%
   group_by(ing_type) %>% summarise(aa = sum(aa_group), srm = sum(SRM))
 
 saveRDS(ingredient_nodes, 'data/ingredient_nodes.rds')
+############################################################
+#old
+ingredient_edges <- readRDS('data/ingredient_edges.rds')
+ingredient_nodes <- readRDS('data/ingredient_nodes.rds')
+
+ingredient_edges <- rename(ingredient_edges, source = V1, target = V2, value = count)
+ingredient_nodes <- rename(ingredient_nodes, id = ing_final, value = count)
+###
+
+#new#
+saveRDS(ingredient_nodes, 'data/ingredient_nodes2.rds')
+saveRDS(ingredient_edges, 'data/ingredient_edges2.rds')
 

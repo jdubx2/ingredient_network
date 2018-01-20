@@ -3,11 +3,8 @@ library(shiny)
 library(dplyr)
 library(jsonlite)
 
-ingredient_edges <- readRDS('data/ingredient_edges.rds')
-ingredient_nodes <- readRDS('data/ingredient_nodes.rds')
-
-ingredient_edges <- rename(ingredient_edges, source = V1, target = V2, value = count)
-ingredient_nodes <- rename(ingredient_nodes, id = ing_final, value = count)
+ingredient_edges <- readRDS('data/ingredient_edges2.rds')
+ingredient_nodes <- readRDS('data/ingredient_nodes2.rds')
 
 ui <- fluidPage(
   
