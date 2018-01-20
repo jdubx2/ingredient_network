@@ -1,4 +1,10 @@
-var margin = {top: 20, right:20, bottom: 20, left: 20},
+function range(start, stop, step){
+  var a=[start], b=start;
+  while(b<stop){b+=step;a.push(b)}
+  return a;
+};
+
+var margin = {top: 70, right:20, bottom: 20, left: 20},
   width = $(window).width() * .9 - margin.left - margin.right,
   height = $(window).height() * .9 - margin.top - margin.bottom
 
@@ -15,7 +21,7 @@ var grainColor = d3.scaleThreshold()
 var simulation = d3.forceSimulation()
     .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(60))
     .force("charge", d3.forceManyBody().strength(-60))
-    .force("center", d3.forceCenter(width / 2, height / 2));
+    .force("center", d3.forceCenter((width + margin.left + margin.right) / 2, (height + margin.bottom) / 2));
 
 var svg = d3.select('#div_graph')
   .append('svg')
@@ -26,10 +32,29 @@ var svg = d3.select('#div_graph')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
       .attr('id', 'g_graph');
 
+var legend_width = Math.min(width,600);
+
+  if(legend_width < 600){
+    var legend_trans = margin.left;
+  } else{
+    var legend_trans = margin.left + ((width-600) / 2) ;
+  }
+
+var legend = d3.select('#svg_graph')
+  .append('g')
+    .attr('transform', 'translate(' + legend_trans + ',' + 20 + ')')
+    .attr('id', 'g_legend');
+
+var legend_axis = d3.scaleLinear()
+  .domain([1,24])
+	.range([0,legend_width]);
+
 //gradient defs
-var grain_defs  = svg.append("defs").attr('id', 'grain_defs');
-var hop_defs  = svg.append("defs").attr('id', 'hop_defs');
-var yeast_defs  = svg.append("defs").attr('id', 'yeast_defs');
+var svg_proper = d3.select('#svg_graph')
+
+var grain_defs  = svg_proper.append("defs").attr('id', 'grain_defs');
+var hop_defs  = svg_proper.append("defs").attr('id', 'hop_defs');
+var yeast_defs  = svg_proper.append("defs").attr('id', 'yeast_defs');
 
 var hopsRadial = hop_defs.selectAll("radialGradient")
   .data([1,2,3,4,5,6]).enter()
@@ -83,6 +108,107 @@ var yeastRadial = yeast_defs.append('radialGradient')
       .attr("stop-color", "#004080")
       .attr("offset", "100%");
 
+    //legend variables
+    var circle_y = 15,
+        circle_r = 8,
+        text_y = 33,
+        text_sz = 9
+        header_sz = 14
+        legend_fill = 'white';
+
+    //grain legend
+    legend.selectAll("legend_circle")
+      .data(range(1,11,1)).enter()
+      .append("circle")
+        .attr('class', 'legend_circle')
+        .attr('cx', function(d) { return legend_axis(d);})
+        .attr('cy', circle_y)
+        .attr('r', circle_r)
+        .attr("fill", function(d,i) { return "url(#g-gradient-radial-" + (i+1) + ")";});
+
+      var grain_json = {"x" : range(1,11,1), "value" : ["2","3","5","11","22","30","60","65","200","350","600"]}
+
+    legend.selectAll("legend_text")
+      .data(grain_json.x).enter()
+      .append("text")
+        .attr('class', 'legend_text')
+        .attr('x', function(d,i) {return legend_axis(d);})
+        .attr('y', text_y)
+        .attr('font-size', text_sz)
+        .attr('fill', legend_fill)
+        .attr('text-anchor', 'middle')
+        .text(function(d,i){return grain_json.value[i];});
+
+    legend.append("text")
+      .attr('class', 'legend_header')
+      .attr('x', legend_axis(6))
+      .attr('y', 0)
+      .attr('font-size', header_sz)
+      .attr('font-weight', 'bold')
+      .attr('fill', legend_fill)
+      .attr('text-anchor', 'middle')
+      .text('Grains (SRM Value)');
+
+    //yeast legend
+    legend.append("circle")
+        .attr('class', 'legend_circle')
+        .attr('cx', legend_axis(15))
+        .attr('cy', circle_y)
+        .attr('r', circle_r)
+        .attr('fill', "url(#yeast-gradient)");
+
+    legend.append("text")
+      .attr('class', 'legend_text')
+      .attr('x', legend_axis(15))
+      .attr('y', text_y)
+      .attr('font-size', text_sz)
+      .attr('fill', legend_fill)
+      .attr('text-anchor', 'middle')
+      .text('All');
+
+    legend.append("text")
+      .attr('class', 'legend_header')
+      .attr('x', legend_axis(15))
+      .attr('y', 0)
+      .attr('font-size', header_sz)
+      .attr('font-weight', 'bold')
+      .attr('fill', legend_fill)
+      .attr('text-anchor', 'middle')
+      .text('Yeast');
+
+    //hops legend
+    legend.selectAll("legend_circle")
+      .data(range(19,24,1))
+      .enter().append("circle")
+        .attr('class', 'legend_circle')
+        .attr('cx', function(d) {return legend_axis(d);})
+        .attr('cy', circle_y)
+        .attr('r', circle_r)
+        .attr('fill', function(d,i) {return "url(#h-gradient-radial-" + (i+1) + ")";});
+
+    var hops_json = {"x" : range(19,24,1), "value" : ["2-5","5-8","8-10","10-13","13-15","15-20"]}
+
+    legend.selectAll("legend_text")
+      .data(hops_json.x).enter()
+      .append("text")
+        .attr('class', 'legend_text')
+        .attr('x', function(d,i) {return legend_axis(d);})
+        .attr('y', text_y)
+        .attr('font-size', text_sz)
+        .attr('fill', legend_fill)
+        .attr('text-anchor', 'middle')
+        .text(function(d,i){return hops_json.value[i];});
+
+    legend.append("text")
+      .attr('class', 'legend_header')
+      .attr('x', legend_axis(21.5))
+      .attr('y', 0)
+      .attr('font-size', header_sz)
+      .attr('font-weight', 'bold')
+      .attr('fill', legend_fill)
+      .attr('text-anchor', 'middle')
+      .text('Hops (Alpha Acid %)');
+
 Shiny.addCustomMessageHandler("init",
   function(data){
 
@@ -109,6 +235,13 @@ Shiny.addCustomMessageHandler("init",
     data.nodes.forEach(function(d,i) {nodeCounts.push(d['value']);});
     var nodeRange = d3.extent(nodeCounts);
     nodeSize.domain([nodeRange[0], nodeRange[1]]);
+
+    var tool_tip = d3.tip()
+      .attr("class", "d3-tip")
+      .offset([-8, 0])
+      .html(function(d,i) { return d; });
+
+    svg.call(tool_tip);
 
     var link = svg.append("g")
       .attr("class", "links")
@@ -138,6 +271,10 @@ Shiny.addCustomMessageHandler("init",
         .attr("r", 0)
         .attr("r", function(d) {return nodeSize(d.value); })
         .attr("fill", function(d) { return colorPicker(d.ing_type, d.aa_group, d.srm); })
+        .on('mouseover', function(d,i) {
+          tool_tip.show(d.id);})
+        .on('mouseout', function(d,i) {
+          tool_tip.hide(d.id);})
         .call(d3.drag()
             .on("start", dragstarted)
             .on("drag", dragged)
@@ -167,7 +304,7 @@ Shiny.addCustomMessageHandler("init",
       node
           // .attr("cx", function(d) { return d.x; })
           // .attr("cy", function(d) { return d.y; });
-          .attr("cx", function(d) { return d.x = Math.max(nodeSize(d.value), Math.min(width - nodeSize(d.value), d.x)); })
+        .attr("cx", function(d) { return d.x = Math.max(nodeSize(d.value), Math.min(width - nodeSize(d.value), d.x)); })
         .attr("cy", function(d) { return d.y = Math.max(nodeSize(d.value), Math.min(height - nodeSize(d.value), d.y)); });
     }
 

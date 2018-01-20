@@ -13,11 +13,11 @@ ui <- fluidPage(
   
   tags$script(src="https://d3js.org/d3.v4.min.js"),
   tags$script(src ="d3-scale-chromatic.v1.min.js"),
+  tags$script(src="d3_tip.js"),
   tags$link(rel="stylesheet", type="text/css", href="styles.css"),
   
-  div(id = "div_title",
-      selectInput("style", "", 
-                  choices=unique(ingredient_nodes$style))),
+      selectInput("style_input", "",
+                  choices=unique(ingredient_nodes$style)),
   
   div(id = "div_graph",
       tags$script(src="graph.js"))
@@ -26,10 +26,10 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   
-  update_json <- eventReactive(input$style,{
+  update_json <- eventReactive(input$style_input,{
     
-    nodes <- filter(ingredient_nodes, style == input$style) %>% ungroup()
-    links <- filter(ingredient_edges, style == input$style) %>% ungroup()
+    nodes <- filter(ingredient_nodes, style == input$style_input) %>% ungroup()
+    links <- filter(ingredient_edges, style == input$style_input) %>% ungroup()
     
     link_filter <- bind_rows(mutate(links, index = row_number()) %>% 
                                select(node = source, value, index),
