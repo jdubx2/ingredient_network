@@ -54,21 +54,21 @@ body{
 }
 
 .selectize-input.full{
-  background-color: #404040;
-  color: #f5f5f5;
+  background-color: 	#D3D3D3;
+  color: black;
   text-align: center;
   font-weight: bold;
 }
 .selectize-input, .selectize-control.single .selectize-input.input-active {
-    background: #404040;
+    background: 	#D3D3D3;
     cursor: text;
     display: inline-block;
 }
 select{
-  background-color: #404040;
+  background-color: #D3D3D3;
 }
 .selectize-dropdown{
-  background-color: #404040;
-  color: #f5f5f5;
+  background-color: #D3D3D3;
+  color: black;
   text-align: center;
 }
