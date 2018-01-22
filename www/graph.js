@@ -113,7 +113,7 @@ var yeastRadial = yeast_defs.append('radialGradient')
         circle_r = 8,
         text_y = 33,
         text_sz = 9
-        header_sz = 14
+        header_sz = 12
         legend_fill = 'white';
 
     //grain legend
